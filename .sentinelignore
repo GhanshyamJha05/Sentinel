@@ -1,0 +1,4 @@
+# Known false positives / fixtures
+testdata/
+*.example
+.go-version

@@ -1,0 +1,74 @@
+version: 2
+
+project_name: sentinel
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: sentinel
+    main: .
+    binary: sentinel
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X github.com/GhanshyamJha05/Sentinel/pkg/version.Version={{.Version}}
+      - -X github.com/GhanshyamJha05/Sentinel/pkg/version.Commit={{.Commit}}
+      - -X github.com/GhanshyamJha05/Sentinel/pkg/version.Date={{.Date}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - repository:
+      owner: GhanshyamJha05
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/GhanshyamJha05/Sentinel
+    description: Unified security scanner for secrets, dependencies, and misconfigurations
+    install: |
+      bin.install "sentinel"
+    test: |
+      system "#{bin}/sentinel", "--version"
+
+dockers:
+  - image_templates:
+      - "ghcr.io/ghanshyamjha05/sentinel:{{ .Tag }}"
+      - "ghcr.io/ghanshyamjha05/sentinel:latest"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--label=org.opencontainers.image.source=https://github.com/GhanshyamJha05/Sentinel"
+      - "--build-arg=VERSION={{.Version}}"
+      - "--build-arg=COMMIT={{.Commit}}"
+      - "--build-arg=DATE={{.Date}}"
+
+release:
+  github:
+    owner: GhanshyamJha05
+    name: Sentinel

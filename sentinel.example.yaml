@@ -1,0 +1,6 @@
+# Example project config — copy to sentinel.yaml and customize
+format: table
+fail-on: high
+git-history: false
+workers: 0
+ignore: []

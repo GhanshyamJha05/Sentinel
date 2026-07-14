@@ -1,0 +1,4 @@
+FROM postgres:14
+ENV POSTGRES_PASSWORD=password
+ENV MYSQL_ROOT_PASSWORD=root
+USER root

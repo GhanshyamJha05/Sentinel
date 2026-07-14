@@ -1,0 +1,11 @@
+bin/
+dist/
+*.exe
+*.test
+*.out
+coverage.out
+.idea/
+.vscode/
+*.swp
+.DS_Store
+.cache/

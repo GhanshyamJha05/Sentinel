@@ -1,0 +1,9 @@
+- id: sentinel
+  name: sentinel security scan
+  description: Scan for secrets, vulnerable dependencies, and misconfigurations
+  entry: sentinel
+  language: golang
+  language_version: '1.22'
+  pass_filenames: false
+  always_run: true
+  args: [scan, all, ., --fail-on, high, --no-color]
