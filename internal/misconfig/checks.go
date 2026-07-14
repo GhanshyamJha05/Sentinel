@@ -107,8 +107,10 @@ func finding(rule, file string, line int, sev report.Severity, msg, rem string) 
 // EnvFileExposed flags .env / credential files present in the tree.
 type EnvFileExposed struct{}
 
-func (c *EnvFileExposed) ID() string          { return "env-file-exposed" }
-func (c *EnvFileExposed) Description() string { return "Sensitive credential files present in the repository" }
+func (c *EnvFileExposed) ID() string { return "env-file-exposed" }
+func (c *EnvFileExposed) Description() string {
+	return "Sensitive credential files present in the repository"
+}
 
 var sensitiveNames = regexp.MustCompile(`(?i)(^|\.)(env|env\.local|env\.production|credentials|secrets?)(\.|$)|\.pem$|\.key$|id_rsa$|id_ed25519$`)
 
@@ -221,8 +223,10 @@ func (c *DefaultCredentials) Run(ctx CheckContext) ([]report.Finding, error) {
 // WeakPermissions flags world-readable/writable sensitive files (Unix only).
 type WeakPermissions struct{}
 
-func (c *WeakPermissions) ID() string          { return "weak-permissions" }
-func (c *WeakPermissions) Description() string { return "Overly permissive file modes on sensitive files" }
+func (c *WeakPermissions) ID() string { return "weak-permissions" }
+func (c *WeakPermissions) Description() string {
+	return "Overly permissive file modes on sensitive files"
+}
 
 func (c *WeakPermissions) Run(ctx CheckContext) ([]report.Finding, error) {
 	if runtime.GOOS == "windows" {
@@ -258,8 +262,10 @@ func (c *WeakPermissions) Run(ctx CheckContext) ([]report.Finding, error) {
 // MissingSecurityHeaders checks nginx/Apache configs for basic security headers.
 type MissingSecurityHeaders struct{}
 
-func (c *MissingSecurityHeaders) ID() string          { return "missing-security-headers" }
-func (c *MissingSecurityHeaders) Description() string { return "Missing security headers in web server configs" }
+func (c *MissingSecurityHeaders) ID() string { return "missing-security-headers" }
+func (c *MissingSecurityHeaders) Description() string {
+	return "Missing security headers in web server configs"
+}
 
 var requiredHeaders = []string{
 	"X-Content-Type-Options",

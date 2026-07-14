@@ -15,9 +15,9 @@ import (
 type Ecosystem string
 
 const (
-	EcosystemGo     Ecosystem = "Go"
-	EcosystemNPM    Ecosystem = "npm"
-	EcosystemPyPI   Ecosystem = "PyPI"
+	EcosystemGo   Ecosystem = "Go"
+	EcosystemNPM  Ecosystem = "npm"
+	EcosystemPyPI Ecosystem = "PyPI"
 )
 
 // Package is a discovered dependency.
@@ -87,7 +87,7 @@ func parseGoMod(path, rel string) ([]Package, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var pkgs []Package
 	sc := bufio.NewScanner(f)
@@ -203,7 +203,7 @@ func parseRequirements(path, rel string) ([]Package, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var pkgs []Package
 	sc := bufio.NewScanner(f)

@@ -15,11 +15,11 @@ import (
 
 // Options configures a secrets scan.
 type Options struct {
-	Path        string
-	Workers     int
-	Ignore      scanutil.IgnoreMatcher
-	GitHistory  bool
-	Rules       []Rule
+	Path             string
+	Workers          int
+	Ignore           scanutil.IgnoreMatcher
+	GitHistory       bool
+	Rules            []Rule
 	RespectGitIgnore bool
 }
 

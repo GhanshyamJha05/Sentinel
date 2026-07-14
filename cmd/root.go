@@ -10,20 +10,20 @@ import (
 )
 
 var (
-	cfgFile   string
-	format    string
-	failOn    string
-	noColor   bool
-	workers   int
+	cfgFile    string
+	format     string
+	failOn     string
+	noColor    bool
+	workers    int
 	gitHistory bool
-	quiet     bool
+	quiet      bool
 )
 
 // rootCmd is the base command.
 var rootCmd = &cobra.Command{
-	Use:           "sentinel",
-	Short:         "Unified security scanner for secrets, dependencies, and misconfigurations",
-	Long:          `sentinel detects leaked secrets, vulnerable dependencies, and common misconfigurations.
+	Use:   "sentinel",
+	Short: "Unified security scanner for secrets, dependencies, and misconfigurations",
+	Long: `sentinel detects leaked secrets, vulnerable dependencies, and common misconfigurations.
 
 Use it locally, in CI as a build gate, or as a scheduled org-wide scanner.`,
 	Version:       version.Version,

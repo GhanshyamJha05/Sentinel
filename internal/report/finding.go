@@ -65,24 +65,24 @@ func toUpper(s string) string {
 type Category string
 
 const (
-	CategorySecret    Category = "secret"
+	CategorySecret     Category = "secret"
 	CategoryDependency Category = "dependency"
-	CategoryMisconfig Category = "misconfiguration"
+	CategoryMisconfig  Category = "misconfiguration"
 )
 
 // Finding is a single security finding from any scanner module.
 type Finding struct {
-	ID          string    `json:"id"`
-	Category    Category  `json:"category"`
-	Rule        string    `json:"rule"`
-	Severity    Severity  `json:"severity"`
-	Confidence  float64   `json:"confidence,omitempty"`
-	File        string    `json:"file"`
-	Line        int       `json:"line,omitempty"`
-	Column      int       `json:"column,omitempty"`
-	Message     string    `json:"message"`
-	Snippet     string    `json:"snippet,omitempty"`
-	Remediation string    `json:"remediation,omitempty"`
+	ID          string            `json:"id"`
+	Category    Category          `json:"category"`
+	Rule        string            `json:"rule"`
+	Severity    Severity          `json:"severity"`
+	Confidence  float64           `json:"confidence,omitempty"`
+	File        string            `json:"file"`
+	Line        int               `json:"line,omitempty"`
+	Column      int               `json:"column,omitempty"`
+	Message     string            `json:"message"`
+	Snippet     string            `json:"snippet,omitempty"`
+	Remediation string            `json:"remediation,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 

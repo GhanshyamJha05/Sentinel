@@ -29,12 +29,12 @@ type Vuln struct {
 
 // Options configures a dependency scan.
 type Options struct {
-	Path      string
-	Ignore    scanutil.IgnoreMatcher
-	CacheDir  string
-	CacheTTL  time.Duration
-	Client    *http.Client
-	Offline   bool // if true, only use cache / skip network
+	Path     string
+	Ignore   scanutil.IgnoreMatcher
+	CacheDir string
+	CacheTTL time.Duration
+	Client   *http.Client
+	Offline  bool // if true, only use cache / skip network
 }
 
 // Scan parses manifests and queries OSV for vulnerabilities.
@@ -89,11 +89,11 @@ func Scan(ctx context.Context, opts Options) ([]report.Finding, error) {
 				Message:     msg,
 				Remediation: rem,
 				Metadata: map[string]string{
-					"package":    p.Name,
-					"version":    p.Version,
-					"ecosystem":  string(p.Ecosystem),
-					"vuln_id":    v.ID,
-					"fixed":      v.Fixed,
+					"package":   p.Name,
+					"version":   p.Version,
+					"ecosystem": string(p.Ecosystem),
+					"vuln_id":   v.ID,
+					"fixed":     v.Fixed,
 				},
 			})
 		}
@@ -121,7 +121,7 @@ type osvVuln struct {
 		Score string `json:"score"`
 	} `json:"severity"`
 	DatabaseSpecific map[string]any `json:"database_specific"`
-	Affected []struct {
+	Affected         []struct {
 		Ranges []struct {
 			Events []struct {
 				Introduced string `json:"introduced"`
@@ -209,7 +209,7 @@ func queryOSVBatch(ctx context.Context, client *http.Client, pkgs []Package) ([]
 			continue
 		}
 		body, readErr := io.ReadAll(resp.Body)
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		if readErr != nil {
 			lastErr = readErr
 			continue

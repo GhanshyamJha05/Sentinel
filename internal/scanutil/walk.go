@@ -40,13 +40,13 @@ type FileJob struct {
 
 // WalkOptions configures concurrent directory walking.
 type WalkOptions struct {
-	Root       string
-	Workers    int
-	SkipDirs   map[string]struct{}
-	Ignore     IgnoreMatcher
+	Root            string
+	Workers         int
+	SkipDirs        map[string]struct{}
+	Ignore          IgnoreMatcher
 	FollowGitIgnore bool
-	GitIgnore  IgnoreMatcher
-	MaxFileSize int64 // skip files larger than this (0 = no limit)
+	GitIgnore       IgnoreMatcher
+	MaxFileSize     int64 // skip files larger than this (0 = no limit)
 }
 
 // WalkFiles walks root concurrently and invokes handler for each regular file.
@@ -154,7 +154,7 @@ func ReadLines(path string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	var lines []string
 	sc := bufio.NewScanner(f)

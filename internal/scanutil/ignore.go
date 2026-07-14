@@ -31,7 +31,7 @@ func LoadSentinelIgnore(root string, extraPatterns []string) *GlobIgnore {
 	path := filepath.Join(root, ".sentinelignore")
 	f, err := os.Open(path)
 	if err == nil {
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		sc := bufio.NewScanner(f)
 		for sc.Scan() {
 			line := strings.TrimSpace(sc.Text())

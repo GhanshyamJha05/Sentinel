@@ -103,10 +103,6 @@ func DefaultRules() []Rule {
 // ScanLine runs all rules against a single line of text.
 func ScanLine(rules []Rule, file string, lineNum int, line string) []report.Finding {
 	var findings []report.Finding
-	trimmed := strings.TrimSpace(line)
-	if trimmed == "" || strings.HasPrefix(trimmed, "#") || strings.HasPrefix(trimmed, "//") {
-		// still scan comments — secrets often hide in comments; only skip empty
-	}
 	if strings.TrimSpace(line) == "" {
 		return nil
 	}
@@ -130,16 +126,16 @@ func ScanLine(rules []Rule, file string, lineNum int, line string) []report.Find
 				confidence = math.Min(1.0, confidence+((ent-rule.EntropyMin)*0.05))
 			}
 			findings = append(findings, report.Finding{
-				ID:         fmt.Sprintf("%s:%d:%s", file, lineNum, rule.ID),
-				Category:   report.CategorySecret,
-				Rule:       rule.ID,
-				Severity:   rule.Severity,
-				Confidence: confidence,
-				File:       file,
-				Line:       lineNum,
-				Column:     idx[0] + 1,
-				Message:    rule.Description,
-				Snippet:    Redact(line, secret),
+				ID:          fmt.Sprintf("%s:%d:%s", file, lineNum, rule.ID),
+				Category:    report.CategorySecret,
+				Rule:        rule.ID,
+				Severity:    rule.Severity,
+				Confidence:  confidence,
+				File:        file,
+				Line:        lineNum,
+				Column:      idx[0] + 1,
+				Message:     rule.Description,
+				Snippet:     Redact(line, secret),
 				Remediation: "Remove the secret, rotate credentials, and add the path to .sentinelignore if this is a false positive.",
 			})
 		}

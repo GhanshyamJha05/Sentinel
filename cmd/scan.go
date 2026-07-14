@@ -118,8 +118,8 @@ type exitError struct {
 	msg  string
 }
 
-func (e *exitError) Error() string   { return e.msg }
-func (e *exitError) ExitCode() int   { return e.code }
+func (e *exitError) Error() string { return e.msg }
+func (e *exitError) ExitCode() int { return e.code }
 func (e *exitError) Is(target error) bool {
 	_, ok := target.(*exitError)
 	return ok

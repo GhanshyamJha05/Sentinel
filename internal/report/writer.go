@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/GhanshyamJha05/Sentinel/pkg/version"
+	"github.com/fatih/color"
 )
 
 // Format is an output format name.
@@ -22,8 +22,8 @@ const (
 
 // Writer renders a Report.
 type Writer struct {
-	Out    io.Writer
-	Format Format
+	Out     io.Writer
+	Format  Format
 	NoColor bool
 }
 
@@ -85,12 +85,16 @@ func writeTable(out io.Writer, r Report, noColor bool) error {
 		}
 	}
 
-	fmt.Fprintf(out, "%s\n", bold("sentinel security scan"))
-	fmt.Fprintf(out, "%s\n\n", dim(fmt.Sprintf("target=%s  findings=%d  at=%s", r.Target, r.Summary.Total, r.ScannedAt.Format(time.RFC3339))))
+	if _, err := fmt.Fprintf(out, "%s\n", bold("sentinel security scan")); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(out, "%s\n\n", dim(fmt.Sprintf("target=%s  findings=%d  at=%s", r.Target, r.Summary.Total, r.ScannedAt.Format(time.RFC3339)))); err != nil {
+		return err
+	}
 
 	if len(r.Findings) == 0 {
-		fmt.Fprintf(out, "%s\n", color.GreenString("No findings."))
-		return nil
+		_, err := fmt.Fprintf(out, "%s\n", color.GreenString("No findings."))
+		return err
 	}
 
 	for i, f := range r.Findings {
@@ -98,23 +102,35 @@ func writeTable(out io.Writer, r Report, noColor bool) error {
 		if f.Line > 0 {
 			loc = fmt.Sprintf("%s:%d", f.File, f.Line)
 		}
-		fmt.Fprintf(out, "%s  %s  %s  [%s]\n", colorize(f.Severity), bold(f.Rule), loc, f.Category)
-		fmt.Fprintf(out, "  %s\n", f.Message)
+		if _, err := fmt.Fprintf(out, "%s  %s  %s  [%s]\n", colorize(f.Severity), bold(f.Rule), loc, f.Category); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintf(out, "  %s\n", f.Message); err != nil {
+			return err
+		}
 		if f.Snippet != "" {
-			fmt.Fprintf(out, "  %s %s\n", dim("snippet:"), f.Snippet)
+			if _, err := fmt.Fprintf(out, "  %s %s\n", dim("snippet:"), f.Snippet); err != nil {
+				return err
+			}
 		}
 		if f.Remediation != "" {
-			fmt.Fprintf(out, "  %s %s\n", dim("fix:"), f.Remediation)
+			if _, err := fmt.Fprintf(out, "  %s %s\n", dim("fix:"), f.Remediation); err != nil {
+				return err
+			}
 		}
 		if i < len(r.Findings)-1 {
-			fmt.Fprintln(out)
+			if _, err := fmt.Fprintln(out); err != nil {
+				return err
+			}
 		}
 	}
 
-	fmt.Fprintln(out)
-	fmt.Fprintf(out, "%s  critical=%d high=%d medium=%d low=%d info=%d\n",
+	if _, err := fmt.Fprintln(out); err != nil {
+		return err
+	}
+	_, err := fmt.Fprintf(out, "%s  critical=%d high=%d medium=%d low=%d info=%d\n",
 		bold("summary"), r.Summary.Critical, r.Summary.High, r.Summary.Medium, r.Summary.Low, r.Summary.Info)
-	return nil
+	return err
 }
 
 // NewReport creates a report shell for a target.

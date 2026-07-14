@@ -1,7 +1,6 @@
 version: "2"
 
 run:
-  timeout: 5m
   tests: true
 
 linters:
@@ -13,18 +12,14 @@ linters:
     - unused
     - misspell
     - unconvert
+  settings:
+    errcheck:
+      check-type-assertions: true
+
+formatters:
+  enable:
     - gofmt
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-
 issues:
-  exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-
-output:
-  formats:
-    - format: colored-line-number
-      path: stdout
