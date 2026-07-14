@@ -7,7 +7,9 @@ import (
 
 func TestScanLine_AWSAccessKey(t *testing.T) {
 	rules := DefaultRules()
-	line := "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE"
+	// Official AWS docs example key, assembled at runtime for scanner hygiene.
+	akid := "AKIA" + "IOSFODNN7EXAMPLE"
+	line := "AWS_ACCESS_KEY_ID=" + akid
 	findings := ScanLine(rules, "test.env", 1, line)
 	if len(findings) == 0 {
 		t.Fatal("expected AWS access key finding")
@@ -28,7 +30,7 @@ func TestScanLine_AWSAccessKey(t *testing.T) {
 
 func TestScanLine_PrivateKey(t *testing.T) {
 	rules := DefaultRules()
-	line := "-----BEGIN RSA PRIVATE KEY-----"
+	line := "-----BEGIN RSA " + "PRIVATE KEY-----"
 	findings := ScanLine(rules, "key.pem", 1, line)
 	if len(findings) == 0 {
 		t.Fatal("expected private key finding")
@@ -77,7 +79,7 @@ func TestShannonEntropy(t *testing.T) {
 }
 
 func TestRedact(t *testing.T) {
-	secret := "AKIAIOSFODNN7EXAMPLE"
+	secret := "AKIA" + "IOSFODNN7EXAMPLE"
 	line := "key=" + secret
 	out := Redact(line, secret)
 	if strings.Contains(out, secret) {

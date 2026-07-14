@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/GhanshyamJha05/Sentinel/internal/deps"
@@ -49,7 +50,37 @@ func ignoreFor(root string) scanutil.IgnoreMatcher {
 	return scanutil.LoadSentinelIgnore(root, extra)
 }
 
+func filterFindings(findings []report.Finding) []report.Finding {
+	ignoreVulns := map[string]struct{}{}
+	for _, id := range viper.GetStringSlice("ignore_vulns") {
+		ignoreVulns[strings.TrimSpace(id)] = struct{}{}
+	}
+	ignoreRules := map[string]struct{}{}
+	for _, id := range viper.GetStringSlice("ignore_rules") {
+		ignoreRules[strings.TrimSpace(id)] = struct{}{}
+	}
+	if len(ignoreVulns) == 0 && len(ignoreRules) == 0 {
+		return findings
+	}
+	out := make([]report.Finding, 0, len(findings))
+	for _, f := range findings {
+		if _, skip := ignoreRules[f.Rule]; skip {
+			continue
+		}
+		if f.Metadata != nil {
+			if vid := f.Metadata["vuln_id"]; vid != "" {
+				if _, skip := ignoreVulns[vid]; skip {
+					continue
+				}
+			}
+		}
+		out = append(out, f)
+	}
+	return out
+}
+
 func writeAndExit(target string, findings []report.Finding) error {
+	findings = filterFindings(findings)
 	fmtStr := viper.GetString("format")
 	if fmtStr == "" {
 		fmtStr = format

@@ -4,3 +4,7 @@ fail-on: high
 git-history: false
 workers: 0
 ignore: []
+# Suppress specific OSV / GHSA IDs that do not apply to your usage
+ignore_vulns: []
+# Suppress entire rule IDs (e.g. missing-security-headers)
+ignore_rules: []

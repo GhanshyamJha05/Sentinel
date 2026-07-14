@@ -1,0 +1,10 @@
+# Project config for sentinel dogfooding this repository.
+format: table
+fail-on: high
+git-history: false
+
+# GO-2026-5932 flags all golang.org/x/crypto versions because the legacy
+# openpgp subpackage is unmaintained. This module does not import openpgp
+# (crypto comes in transitively via go-git / ssh); there is no fixed version.
+ignore_vulns:
+  - GO-2026-5932

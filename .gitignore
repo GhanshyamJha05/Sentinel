@@ -4,6 +4,7 @@ dist/
 *.test
 *.out
 coverage.out
+scan-results.json
 .idea/
 .vscode/
 *.swp

@@ -1,6 +1,6 @@
 # Detection rules
 
-How to suppress false positives: add a gitignore-style pattern to `.sentinelignore` in the project root, or set `ignore:` in `sentinel.yaml`.
+How to suppress false positives: add a gitignore-style pattern to `.sentinelignore` in the project root, or set `ignore:` / `ignore_vulns:` / `ignore_rules:` in `sentinel.yaml`.
 
 ## Secrets
 
@@ -26,6 +26,8 @@ Secrets are always **redacted** in output (prefix/suffix only). Use `--git-histo
 | `vulnerable-dependency` | varies (from OSV) | Known CVEs / advisories for packages in `go.mod`, `package.json` (+ lockfiles), `requirements.txt` |
 
 Lookups use the free [OSV.dev](https://osv.dev) batch API with a local file cache under `~/.cache/sentinel/osv` (24h TTL) and retry/backoff on rate limits.
+
+Suppress specific advisory IDs with `ignore_vulns` in `sentinel.yaml` (useful when an advisory has no fix and only affects unused subpackages).
 
 ## Misconfigurations
 
