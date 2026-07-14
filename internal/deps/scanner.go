@@ -25,16 +25,18 @@ type Vuln struct {
 	Summary  string
 	Severity report.Severity
 	Fixed    string
+	Imports  []string // Go import paths affected; empty = unknown / not filtered
 }
 
 // Options configures a dependency scan.
 type Options struct {
-	Path     string
-	Ignore   scanutil.IgnoreMatcher
-	CacheDir string
-	CacheTTL time.Duration
-	Client   *http.Client
-	Offline  bool // if true, only use cache / skip network
+	Path         string
+	Ignore       scanutil.IgnoreMatcher
+	CacheDir     string
+	CacheTTL     time.Duration
+	Client       *http.Client
+	Offline      bool // if true, only use cache / skip network
+	SkipIfNoPkgs bool // reserved
 }
 
 // Scan parses manifests and queries OSV for vulnerabilities.
@@ -64,9 +66,28 @@ func Scan(ctx context.Context, opts Options) ([]report.Finding, error) {
 		return nil, err
 	}
 
+	var usedGo map[string]struct{}
+	hasGo := false
+	for _, p := range pkgs {
+		if p.Ecosystem == EcosystemGo {
+			hasGo = true
+			break
+		}
+	}
+	if hasGo && !opts.Offline {
+		usedGo = UsedGoImports(ctx, FindGoModuleRoot(opts.Path))
+	}
+
 	var findings []report.Finding
 	for _, p := range pkgs {
-		for _, v := range vulnsByPkg[FormatPackageKey(p)] {
+		vulns := vulnsByPkg[FormatPackageKey(p)]
+		if p.Ecosystem == EcosystemGo && !opts.Offline && usedGo != nil {
+			vulns = enrichVulnImports(ctx, opts.Client, cache, vulns)
+		}
+		for _, v := range vulns {
+			if !VulnApplies(v, p.Ecosystem, usedGo) {
+				continue
+			}
 			sev := v.Severity
 			if sev == "" {
 				sev = report.SeverityMedium

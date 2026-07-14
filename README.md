@@ -8,10 +8,10 @@ Unified CLI security scanner for **leaked secrets**, **vulnerable dependencies**
 
 ## Features
 
-- **Secrets** — regex + Shannon entropy detectors (AWS, GCP, Slack, GitHub, Stripe, JWTs, private keys, generic API keys); optional git history via go-git
-- **Dependencies** — parses `go.mod`, `package.json` / lockfiles, `requirements.txt`; queries [OSV.dev](https://osv.dev) with local TTL cache
-- **Misconfigurations** — exposed `.env` files, debug flags, default credentials, weak permissions (Unix), missing security headers
-- **CI-ready** — table / JSON / SARIF output, `--fail-on` exit codes
+- **Secrets** — regex + Shannon entropy detectors (AWS, GCP, Slack, GitHub, Stripe, JWTs, private keys, generic API keys); optional git history via go-git; PR/diff mode with `--git-diff`
+- **Dependencies** — parses `go.mod`, `package.json` / lockfiles, `requirements.txt`; queries [OSV.dev](https://osv.dev) with local TTL cache; Go vulns filtered to imports you actually use
+- **Misconfigurations** — exposed `.env` files, debug flags, default credentials, weak permissions (Unix), missing security headers, Terraform public exposure / hardcoded secrets
+- **CI-ready** — table / JSON / SARIF output, `--fail-on` exit codes, `--git-diff` for PR gates
 
 ## Install
 
@@ -39,6 +39,9 @@ sentinel scan config ./path
 
 # CI gate: fail on Critical/High (default)
 sentinel scan all . --format json --fail-on high
+
+# PR mode: only changed files vs main
+sentinel scan all . --git-diff origin/main --fail-on high
 
 # Machine-readable / GitHub Code Scanning
 sentinel scan all . --format sarif > results.sarif
@@ -72,6 +75,7 @@ MEDIUM  vulnerable-dependency  go.mod  [dependency]
 | `--no-color` | false | Disable colors |
 | `--workers` | NumCPU | Concurrent file workers |
 | `--git-history` | false | Also scan git history for secrets |
+| `--git-diff` | (off) | Only scan files changed vs a git ref (e.g. `origin/main`) — ideal for PRs |
 | `-q`, `--quiet` | false | Suppress non-essential output |
 
 Environment variables use the `SENTINEL_` prefix (e.g. `SENTINEL_FORMAT=json`).

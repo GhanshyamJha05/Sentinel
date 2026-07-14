@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `--git-diff <ref>` to scan only files changed vs a git ref (PR-friendly)
+- Go dependency findings filtered by actually imported packages (`go list -deps`)
+- Terraform IaC checks: public SG/S3 exposure and hardcoded secrets
+
 ## [0.1.0] - 2026-07-14
 
 ### Added

@@ -50,6 +50,23 @@ func ignoreFor(root string) scanutil.IgnoreMatcher {
 	return scanutil.LoadSentinelIgnore(root, extra)
 }
 
+// scanScope resolves ignore matcher and optional changed-file list for --git-diff.
+func scanScope(root string) (ignore scanutil.IgnoreMatcher, changed []string, err error) {
+	base := ignoreFor(root)
+	ref := viper.GetString("git-diff")
+	if ref == "" {
+		ref = gitDiff
+	}
+	if ref == "" {
+		return base, nil, nil
+	}
+	changed, err = scanutil.GitDiffFiles(root, ref)
+	if err != nil {
+		return nil, nil, fmt.Errorf("--git-diff %q: %w", ref, err)
+	}
+	return scanutil.CombineIgnore(base, changed), changed, nil
+}
+
 func filterFindings(findings []report.Finding) []report.Finding {
 	ignoreVulns := map[string]struct{}{}
 	for _, id := range viper.GetStringSlice("ignore_vulns") {
@@ -158,10 +175,14 @@ func newSecretsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ignore, _, err := scanScope(target)
+			if err != nil {
+				return err
+			}
 			findings, err := secrets.Scan(secrets.Options{
 				Path:             target,
 				Workers:          viper.GetInt("workers"),
-				Ignore:           ignoreFor(target),
+				Ignore:           ignore,
 				GitHistory:       viper.GetBool("git-history") || gitHistory,
 				RespectGitIgnore: true,
 			})
@@ -183,13 +204,21 @@ func newDepsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ignore, changed, err := scanScope(target)
+			if err != nil {
+				return err
+			}
+			if changed != nil && !scanutil.ManifestTouched(changed) {
+				return writeAndExit(target, nil)
+			}
 			findings, err := deps.Scan(cmd.Context(), deps.Options{
 				Path:   target,
-				Ignore: ignoreFor(target),
+				Ignore: ignoreFor(target), // always use project ignore for manifests; diff gates via ManifestTouched
 			})
 			if err != nil {
 				return err
 			}
+			_ = ignore
 			return writeAndExit(target, findings)
 		},
 	}
@@ -205,9 +234,13 @@ func newConfigCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ignore, _, err := scanScope(target)
+			if err != nil {
+				return err
+			}
 			findings, err := misconfig.Scan(misconfig.Options{
 				Path:   target,
-				Ignore: ignoreFor(target),
+				Ignore: ignore,
 			})
 			if err != nil {
 				return err
@@ -237,7 +270,13 @@ func newAllCmd() *cobra.Command {
 }
 
 func runAll(ctx context.Context, target string) ([]report.Finding, error) {
-	ignore := ignoreFor(target)
+	ignore, changed, err := scanScope(target)
+	if err != nil {
+		return nil, err
+	}
+	baseIgnore := ignoreFor(target)
+	runDeps := changed == nil || scanutil.ManifestTouched(changed)
+
 	var (
 		mu       sync.Mutex
 		findings []report.Finding
@@ -257,7 +296,11 @@ func runAll(ctx context.Context, target string) ([]report.Finding, error) {
 		mu.Unlock()
 	}
 
-	wg.Add(3)
+	workers := 2
+	if runDeps {
+		workers = 3
+	}
+	wg.Add(workers)
 	go func() {
 		defer wg.Done()
 		fs, err := secrets.Scan(secrets.Options{
@@ -270,12 +313,14 @@ func runAll(ctx context.Context, target string) ([]report.Finding, error) {
 		setErr(err)
 		appendFindings(fs)
 	}()
-	go func() {
-		defer wg.Done()
-		fs, err := deps.Scan(ctx, deps.Options{Path: target, Ignore: ignore})
-		setErr(err)
-		appendFindings(fs)
-	}()
+	if runDeps {
+		go func() {
+			defer wg.Done()
+			fs, err := deps.Scan(ctx, deps.Options{Path: target, Ignore: baseIgnore})
+			setErr(err)
+			appendFindings(fs)
+		}()
+	}
 	go func() {
 		defer wg.Done()
 		fs, err := misconfig.Scan(misconfig.Options{Path: target, Ignore: ignore})

@@ -42,6 +42,8 @@ func DefaultChecks() []Check {
 		&DefaultCredentials{},
 		&WeakPermissions{},
 		&MissingSecurityHeaders{},
+		&TerraformPublicExpose{},
+		&TerraformHardcodedSecrets{},
 	}
 }
 

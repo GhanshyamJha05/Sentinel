@@ -16,6 +16,7 @@ var (
 	noColor    bool
 	workers    int
 	gitHistory bool
+	gitDiff    string
 	quiet      bool
 )
 
@@ -45,6 +46,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&noColor, "no-color", false, "disable colorized output")
 	rootCmd.PersistentFlags().IntVar(&workers, "workers", 0, "concurrent file workers (default: NumCPU)")
 	rootCmd.PersistentFlags().BoolVar(&gitHistory, "git-history", false, "also scan git history for secrets")
+	rootCmd.PersistentFlags().StringVar(&gitDiff, "git-diff", "", "only scan files changed vs this git ref (e.g. origin/main, HEAD~1)")
 	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "suppress non-essential output")
 
 	_ = viper.BindPFlag("format", rootCmd.PersistentFlags().Lookup("format"))
@@ -52,6 +54,7 @@ func init() {
 	_ = viper.BindPFlag("no-color", rootCmd.PersistentFlags().Lookup("no-color"))
 	_ = viper.BindPFlag("workers", rootCmd.PersistentFlags().Lookup("workers"))
 	_ = viper.BindPFlag("git-history", rootCmd.PersistentFlags().Lookup("git-history"))
+	_ = viper.BindPFlag("git-diff", rootCmd.PersistentFlags().Lookup("git-diff"))
 
 	rootCmd.AddCommand(scanCmd)
 	rootCmd.SetVersionTemplate(fmt.Sprintf("sentinel %s (commit=%s date=%s)\n", version.Version, version.Commit, version.Date))

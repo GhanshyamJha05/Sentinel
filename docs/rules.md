@@ -27,7 +27,9 @@ Secrets are always **redacted** in output (prefix/suffix only). Use `--git-histo
 
 Lookups use the free [OSV.dev](https://osv.dev) batch API with a local file cache under `~/.cache/sentinel/osv` (24h TTL) and retry/backoff on rate limits.
 
-Suppress specific advisory IDs with `ignore_vulns` in `sentinel.yaml` (useful when an advisory has no fix and only affects unused subpackages).
+For Go modules, Sentinel runs `go list -deps` and drops advisories that only affect unused import paths (govulncheck-style precision), e.g. unused `golang.org/x/crypto/openpgp`.
+
+Suppress specific advisory IDs with `ignore_vulns` in `sentinel.yaml` when needed.
 
 ## Misconfigurations
 
@@ -38,3 +40,5 @@ Suppress specific advisory IDs with `ignore_vulns` in `sentinel.yaml` (useful wh
 | `default-credentials` | HIGH | Default passwords in Dockerfiles / compose / configs (`admin`, `password`, `root`, …) |
 | `weak-permissions` | HIGH | World-readable/writable sensitive files (Unix only) |
 | `missing-security-headers` | LOW | nginx/Apache-style configs missing HSTS, CSP, XFO, XCTO |
+| `terraform-public-expose` | HIGH/MEDIUM | Open `0.0.0.0/0` SG rules, public S3 ACLs, disabled Block Public Access, IMDSv1 |
+| `terraform-hardcoded-secret` | CRITICAL | Hardcoded password/secret/key assignments in `.tf` files |

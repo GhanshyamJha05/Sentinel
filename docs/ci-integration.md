@@ -27,8 +27,10 @@ jobs:
   with:
     go-version: '1.22'
 - run: go install github.com/GhanshyamJha05/Sentinel@latest
-- run: sentinel scan all . --format json --fail-on high
+- run: sentinel scan all . --git-diff origin/${{ github.base_ref || 'main' }} --fail-on high
 ```
+
+For push builds without a PR base, omit `--git-diff` to scan the full tree.
 
 ## GitHub Actions (Docker)
 
