@@ -1,4 +1,4 @@
-# sentinel
+# Sentinel
 
 Unified CLI security scanner for **leaked secrets**, **vulnerable dependencies**, and **common misconfigurations**.
 
