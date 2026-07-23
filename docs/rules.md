@@ -6,10 +6,10 @@ How to suppress false positives: add a gitignore-style pattern to `.sentineligno
 
 | Rule ID | Severity | What it detects |
 |---------|----------|-----------------|
-| `aws-access-key` | CRITICAL | AWS Access Key IDs (`AKIA…`) |
+| `aws-access-key` | CRITICAL | AWS Access Key IDs (`AKIA...`) |
 | `aws-secret-key` | CRITICAL | AWS secret access key assignments (with entropy gate) |
-| `gcp-api-key` | HIGH | Google Cloud API keys (`AIza…`) |
-| `slack-token` | HIGH | Slack bot/user tokens (`xox…`) |
+| `gcp-api-key` | HIGH | Google Cloud API keys (`AIza...`) |
+| `slack-token` | HIGH | Slack bot/user tokens (`xox...`) |
 | `github-token` | CRITICAL | GitHub PATs (`ghp_`, `gho_`, etc.) |
 | `stripe-key` | CRITICAL | Stripe secret/restricted keys |
 | `private-key` | CRITICAL | PEM private key headers |
@@ -37,7 +37,7 @@ Suppress specific advisory IDs with `ignore_vulns` in `sentinel.yaml` when neede
 |---------|----------|-----------------|
 | `env-file-exposed` | HIGH | `.env`, `.pem`, `.key`, credential-named files present in the tree |
 | `debug-enabled` | MEDIUM | `DEBUG=true`, `APP_DEBUG`, `"debug": true`, `NODE_ENV=development`, etc. |
-| `default-credentials` | HIGH | Default passwords in Dockerfiles / compose / configs (`admin`, `password`, `root`, …) |
+| `default-credentials` | HIGH | Default passwords in Dockerfiles / compose / configs (`admin`, `password`, `root`, ...) |
 | `weak-permissions` | HIGH | World-readable/writable sensitive files (Unix only) |
 | `missing-security-headers` | LOW | nginx/Apache-style configs missing HSTS, CSP, XFO, XCTO |
 | `terraform-public-expose` | HIGH/MEDIUM | Open `0.0.0.0/0` SG rules, public S3 ACLs, disabled Block Public Access, IMDSv1 |

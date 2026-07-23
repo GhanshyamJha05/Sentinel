@@ -1,4 +1,4 @@
-# Example project config — copy to sentinel.yaml and customize
+# Example project config - copy to sentinel.yaml and customize
 format: table
 fail-on: high
 git-history: false

@@ -8,26 +8,24 @@ Unified CLI security scanner for **leaked secrets**, **vulnerable dependencies**
 
 ## Features
 
-- **Secrets** — regex + Shannon entropy detectors (AWS, GCP, Slack, GitHub, Stripe, JWTs, private keys, generic API keys); optional git history via go-git; PR/diff mode with `--git-diff`
-- **Dependencies** — parses `go.mod`, `package.json` / lockfiles, `requirements.txt`; queries [OSV.dev](https://osv.dev) with local TTL cache; Go vulns filtered to imports you actually use
-- **Misconfigurations** — exposed `.env` files, debug flags, default credentials, weak permissions (Unix), missing security headers, Terraform public exposure / hardcoded secrets
-- **CI-ready** — table / JSON / SARIF output, `--fail-on` exit codes, `--git-diff` for PR gates
+- **Secrets** - regex + Shannon entropy detectors (AWS, GCP, Slack, GitHub, Stripe, JWTs, private keys, generic API keys); optional git history via go-git; PR/diff mode with `--git-diff`
+- **Dependencies** - parses `go.mod`, `package.json` / lockfiles, `requirements.txt`; queries [OSV.dev](https://osv.dev) with local TTL cache; Go vulns filtered to imports you actually use
+- **Misconfigurations** - exposed `.env` files, debug flags, default credentials, weak permissions (Unix), missing security headers, Terraform public exposure / hardcoded secrets
+- **CI-ready** - table / JSON / SARIF output, `--fail-on` exit codes, `--git-diff` for PR gates
 
 ## Install
 
 ```bash
-# Go
 go install github.com/GhanshyamJha05/Sentinel@latest
-
-# Homebrew (after tap is published)
-brew install GhanshyamJha05/tap/sentinel
-
-# Docker
-docker run --rm -v "$PWD:/src" -w /src ghcr.io/ghanshyamjha05/sentinel:latest scan all .
-
-# Binary from GitHub Releases
-# https://github.com/GhanshyamJha05/Sentinel/releases
 ```
+
+Release packaging is configured with GoReleaser for Homebrew, Docker/GHCR, and binary archives. Those channels should be promoted here after the first release artifacts are published.
+
+Planned release channels:
+
+- Homebrew: `brew install GhanshyamJha05/tap/sentinel`
+- Docker: `ghcr.io/ghanshyamjha05/sentinel:latest`
+- Binary archives: [GitHub Releases](https://github.com/GhanshyamJha05/Sentinel/releases)
 
 ## Quickstart
 
@@ -71,11 +69,11 @@ MEDIUM  vulnerable-dependency  go.mod  [dependency]
 |------|---------|-------------|
 | `--config` | `sentinel.yaml` | Config file path |
 | `--format`, `-f` | `table` | `table`, `json`, or `sarif` |
-| `--fail-on` | `high` | Exit 1 if findings ≥ severity (`critical\|high\|medium\|low\|info\|none`) |
+| `--fail-on` | `high` | Exit 1 if findings are at or above severity (`critical\|high\|medium\|low\|info\|none`) |
 | `--no-color` | false | Disable colors |
 | `--workers` | NumCPU | Concurrent file workers |
 | `--git-history` | false | Also scan git history for secrets |
-| `--git-diff` | (off) | Only scan files changed vs a git ref (e.g. `origin/main`) — ideal for PRs |
+| `--git-diff` | (off) | Only scan files changed vs a git ref (e.g. `origin/main`); ideal for PRs |
 | `-q`, `--quiet` | false | Suppress non-essential output |
 
 Environment variables use the `SENTINEL_` prefix (e.g. `SENTINEL_FORMAT=json`).
@@ -94,6 +92,8 @@ ignore:
 ```
 
 Ignore false positives with `.sentinelignore` (gitignore-style patterns). By default `node_modules`, `vendor`, `.git`, and similar directories are skipped; `.gitignore` is respected for secret scans.
+
+You can also suppress specific dependency advisory IDs with `ignore_vulns:` or entire rule IDs with `ignore_rules:` in `sentinel.yaml`.
 
 ## Documentation
 
